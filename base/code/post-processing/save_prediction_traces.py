@@ -2,9 +2,11 @@
 # Save traces to a file for easy post-processing implementations
 import os
 import pickle
-import learning_data
+
 import numpy as np
-import keras
+from tensorflow import keras
+
+import learning_data
 import utils
 
 data_path = '../../data/processed_30Hz_relabeled'

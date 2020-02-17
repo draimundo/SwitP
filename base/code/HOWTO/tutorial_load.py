@@ -1,14 +1,13 @@
 # A basic tutorial in how I load a trained model
-import cnn_vanilla
-import utils
-import learning_data
 import os
-import random as rn
-import keras
-import tensorflow as tf
-import numpy as np
 import pickle
+
 import matplotlib.pyplot as plt
+import numpy as np
+from tensorflow import keras
+
+import learning_data
+import utils
 
 # A path to re-sampled recordings which are organized into folders by user name.
 data_path = r'..\..\data\processed_30Hz_relabeled'
