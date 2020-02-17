@@ -4,7 +4,7 @@ import utils
 import learning_data
 import os
 import random as rn
-import keras
+from tensorflow import keras
 import tensorflow as tf
 import numpy as np
 import pickle
@@ -16,16 +16,16 @@ data_path = '../../data/processed_30Hz_relabeled'
 save_path = '../../tutorial_save_path'
 
 # A list of user names which are loaded.
-
-# users_all = utils.folders_in_path(data_path)
-# users = [u for u in users_all if u not in users_ignore]
-# users.sort()
+users_ignore = []
+users_all = utils.folders_in_path(data_path)
+users = [u for u in users_all if u not in users_ignore]
+users.sort()
 
 # Keeping it simple. Comment this out and use the code above if you want to load everybody
-users = ['6','7','9']
+#users = ['6','7','9']
 
 # List of users we want to train a model for
-users_test = ['7']
+users_test = users
 
 # Hyper-parameters for loading data.
 data_parameters = {'users':                users,   # Users whose data is loaded
@@ -112,11 +112,10 @@ for (i, user_test) in enumerate(users_test):
     os.environ['PYTHONHASHSEED'] = '0'
     rn.seed(1337)
     session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
-    from keras import backend as K
     np.random.seed(1337)
     tf.set_random_seed(1337)
     sess = tf.Session(graph=tf.get_default_graph())
-    K.set_session(sess)
+    tf.compat.v1.keras.backend.set_session(sess)
 
     # Path for saving results
     print("Running experiment: %s" % user_test)
@@ -182,4 +181,4 @@ for (i, user_test) in enumerate(users_test):
         pickle.dump([training_parameters], f)
 
     # Related to seed stuff
-    K.clear_session()
+    # K.clear_session() # No replacement in TF2.1+
