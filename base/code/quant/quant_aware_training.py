@@ -1,19 +1,18 @@
-# A basic tutorial in how I load data and train a model
+import tensorflow as tf
 import cnn_vanilla
+import os
 import utils
 import learning_data
-import os
-import random as rn
-from tensorflow import keras
-import tensorflow as tf
-import numpy as np
-import pickle
+from tensorflow.quantization import quantize as contrib_quantize
+
+#https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1_train.py
+
 
 # A path to re-sampled recordings which are organized into folders by user name.
 data_path = '../../data/processed_30Hz_relabeled'
 
 # Path to where we want to save the training results
-save_path = '../../tutorial_save_path'
+save_path = '../../quant_aware_path'
 
 # A list of user names which are loaded.
 users_ignore = []
@@ -106,16 +105,7 @@ training_parameters = {'lr':              0.0005,
 # The input shape of the CNN
 input_shape = (data_parameters['win_len'], len(data_parameters['data_columns']), 1)
 
-# Train all models
 for (i, user_test) in enumerate(users_test):
-    # Random seed stuff. Maybe this is overkill
-    os.environ['PYTHONHASHSEED'] = '0'
-    rn.seed(1337)
-    session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
-    np.random.seed(1337)
-    tf.compat.v1.set_random_seed(1337)
-    sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph())
-    tf.compat.v1.keras.backend.set_session(sess)
 
     # Path for saving results
     print("Running experiment: %s" % user_test)
@@ -126,59 +116,7 @@ for (i, user_test) in enumerate(users_test):
     else:
         os.mkdir(experiment_save_path)
 
-    # The cnn_vanilla module contains contains everything to generate the CNN model
     model = cnn_vanilla.cnn_model(input_shape, model_parameters)
 
-    # Users whose data we use for training
-    users_train = [u for u in users if u != user_test]
 
-    # Draw users for each class. train_dict and val_dict are dictionaries whose keys are labels and they contain
-    # lists of names for each label
-    train_dict, val_dict = swimming_data.draw_train_val_dicts(users_train,
-                                                              users_per_class=data_parameters['validation_set'])
-
-    print("Validation dictionary: %s" % val_dict)
-
-    # The generator used to draw mini-batches
-    gen = swimming_data.batch_generator_dicts(train_dict=train_dict,
-                                              batch_size=training_parameters['batch_size'],
-                                              noise_std=training_parameters['noise_std'],
-                                              mirror_prob=training_parameters['mirror_prob'],
-                                              random_rot_deg=training_parameters['random_rot_deg'])
-
-    # Optimizer
-    optimizer = keras.optimizers.Adam(lr=training_parameters['lr'], beta_1=training_parameters['beta_1'],
-                                      beta_2=training_parameters['beta_2'])
-
-    # Path to the "best" model w.r.t. the validation accuracy
-    best_path = os.path.join(experiment_save_path, 'model_best.h5')
-
-    # Which model is the best model and where we save it
-    checkpoint = keras.callbacks.ModelCheckpoint(best_path, verbose=1, monitor='acc_1',
-                                                 save_best_only=True, mode='max')
-    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['acc'], weighted_metrics=['acc'])
-
-    # Get the validation data
-    x_val, y_val_cat, val_sample_weights = swimming_data.get_windows_dict(val_dict, return_weights=True)
-    x_val = x_val.reshape((x_val.shape[0], x_val.shape[1], x_val.shape[2], 1))
-
-    # Train the model
-    history = model.fit_generator(generator=gen, validation_data=(x_val, y_val_cat, val_sample_weights),
-                                  epochs=training_parameters['max_epochs'],
-                                  steps_per_epoch=training_parameters['steps_per_epoch'],
-                                  callbacks=[checkpoint])
-
-    # Saving the history and parameters
-    with open(os.path.join(experiment_save_path, 'train_val_dicts.pkl'), 'wb') as f:
-        pickle.dump([train_dict, val_dict], f)
-    with open(os.path.join(experiment_save_path, 'history.pkl'), 'wb') as f:
-        pickle.dump([history.history], f)
-    with open(os.path.join(experiment_save_path, 'data_parameters.pkl'), 'wb') as f:
-        pickle.dump([data_parameters], f)
-    with open(os.path.join(experiment_save_path, 'model_parameters.pkl'), 'wb') as f:
-        pickle.dump([model_parameters], f)
-    with open(os.path.join(experiment_save_path, 'training_parameters.pkl'), 'wb') as f:
-        pickle.dump([training_parameters], f)
-
-    # Related to seed stuff
-    # K.clear_session() # No replacement in TF2.1+
+#TODO quantize, train and evaluate

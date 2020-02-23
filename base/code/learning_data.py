@@ -470,7 +470,10 @@ class LearningData(object):
             users_in_class = list(self.data_windows['original'][l].keys())
             users_train_in_class = [u for u in users_in_class if u in users_train]
             if type(users_per_class) is dict:
-                val_dict[l] = np.random.choice(users_train_in_class, users_per_class[l], replace=False)
+                if users_train_in_class:
+                    val_dict[l] = np.random.choice(users_train_in_class, users_per_class[l], replace=False)
+                else:
+                    raise ValueError("No training value for class " + str(l))
             else:
                 val_dict[l] = np.random.choice(users_train_in_class, users_per_class, replace=False)
             train_dict[l] = [u for u in users_train_in_class if u not in val_dict[l]]
