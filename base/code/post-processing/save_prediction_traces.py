@@ -4,7 +4,7 @@ import os
 import pickle
 
 import numpy as np
-from tensorflow import keras
+import keras
 
 import learning_data
 import utils

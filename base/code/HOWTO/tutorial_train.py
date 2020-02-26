@@ -4,7 +4,7 @@ import utils
 import learning_data
 import os
 import random as rn
-from tensorflow import keras
+import keras
 import tensorflow as tf
 import numpy as np
 import pickle
@@ -111,11 +111,12 @@ for (i, user_test) in enumerate(users_test):
     # Random seed stuff. Maybe this is overkill
     os.environ['PYTHONHASHSEED'] = '0'
     rn.seed(1337)
-    session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+    session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+    from keras import backend as K
     np.random.seed(1337)
-    tf.compat.v1.set_random_seed(1337)
-    sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph())
-    tf.compat.v1.keras.backend.set_session(sess)
+    tf.set_random_seed(1337)
+    sess = tf.Session(graph=tf.get_default_graph())
+    K.set_session(sess)
 
     # Path for saving results
     print("Running experiment: %s" % user_test)
@@ -181,4 +182,4 @@ for (i, user_test) in enumerate(users_test):
         pickle.dump([training_parameters], f)
 
     # Related to seed stuff
-    # K.clear_session() # No replacement in TF2.1+
+    K.clear_session()
