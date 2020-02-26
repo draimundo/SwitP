@@ -4,7 +4,7 @@ import utils
 import learning_data
 import os
 import random as rn
-import keras
+from tensorflow import keras
 import tensorflow as tf
 import numpy as np
 import pickle
@@ -25,7 +25,7 @@ users.sort()
 #users = ['6','7','9']
 
 # List of users we want to train a model for
-users_test = ['1']
+users_test = users
 
 # Hyper-parameters for loading data.
 data_parameters = {'users':                users,   # Users whose data is loaded
@@ -93,8 +93,8 @@ training_parameters = {'lr':              0.0005,
                        'beta_1':          0.9,
                        'beta_2':          0.999,
                        'batch_size':      64,
-                       'max_epochs':      10,      # Keeping small for quick testing
-                       'steps_per_epoch': 10,      # Keeping small for quick testing
+                       'max_epochs':      500,      # Keeping small for quick testing
+                       'steps_per_epoch': 100,      # Keeping small for quick testing
                        'noise_std':       0.01,    # Noise standard deviation for data augmentation
                        'mirror_prob':     0.5,     # Probability of reversing a window for data augmentation
                        'random_rot_deg':  30,      # [-30, 30] is the range of rotation degrees we sample for each
@@ -155,8 +155,20 @@ for (i, user_test) in enumerate(users_test):
     best_path = os.path.join(experiment_save_path, 'model_best.h5')
 
     # Which model is the best model and where we save it
-    checkpoint = keras.callbacks.ModelCheckpoint(best_path, verbose=1, monitor='acc_1',
+    cp = keras.callbacks.ModelCheckpoint(best_path, verbose=1, monitor='val_weighted_acc',
                                                  save_best_only=True, mode='max')
+
+    # Plot the evolution of the model
+    logs_dir = os.path.join(save_path, 'logs')
+    tb = tf.keras.callbacks.TensorBoard(log_dir=logs_dir, histogram_freq=0, batch_size=training_parameters['batch_size'],
+                                        write_graph=True,
+                                        write_grads=False, write_images=False, embeddings_freq=0,
+                                        embeddings_layer_names=None, embeddings_metadata=None,
+                                        embeddings_data=None, update_freq='epoch')
+
+    # Early stopping
+    es = tf.keras.callbacks.EarlyStopping(monitor='val_acc', mode='max', verbose=1, patience=50)
+
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['acc'], weighted_metrics=['acc'])
 
     # Get the validation data
@@ -167,7 +179,7 @@ for (i, user_test) in enumerate(users_test):
     history = model.fit_generator(generator=gen, validation_data=(x_val, y_val_cat, val_sample_weights),
                                   epochs=training_parameters['max_epochs'],
                                   steps_per_epoch=training_parameters['steps_per_epoch'],
-                                  callbacks=[checkpoint])
+                                  callbacks=[cp,tb,es])
 
     # Saving the history and parameters
     with open(os.path.join(experiment_save_path, 'train_val_dicts.pkl'), 'wb') as f:

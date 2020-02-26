@@ -1,4 +1,4 @@
-import keras
+from tensorflow import keras
 
 
 def get_default_model_parameters():
