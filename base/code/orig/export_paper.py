@@ -1,3 +1,4 @@
+import pickle
 import cnn_vanilla
 import utils
 import learning_data
@@ -75,8 +76,8 @@ training_parameters = {'lr': 0.0005,
                        'beta_1': 0.9,
                        'beta_2': 0.999,
                        'batch_size': 64,
-                       'max_epochs': 1,
-                       'steps_per_epoch': 7000,  # no transitions between epochs
+                       'max_epochs': 200,
+                       'steps_per_epoch': 300,  # no transitions between epochs
                        'noise_std': 0.01,  # Noise standard deviation for data augmentation
                        'mirror_prob': 0.5,
                        # Probability of reversing a window for data augmentation
@@ -102,7 +103,18 @@ tf.keras.backend.set_session(sess)
 
 users_train = users
 
-gen = swimming_data.batch_generator_dicts(train_dict=users_train,
+# Use the same validation set as in the paper table 2
+val_dict = {0: ['29'],
+            1: ['13', '16', '19'],
+            2: ['29', '33', '40'],
+            3: ['22', '23', '36'],
+            4: ['18', '33']}
+
+print("Validation dictionary: %s" % val_dict)
+
+train_dict = swimming_data.draw_train_dict(users_train, val_dict)
+
+gen = swimming_data.batch_generator_dicts(train_dict=train_dict,
                                           batch_size=training_parameters['batch_size'],
                                           noise_std=training_parameters['noise_std'],
                                           mirror_prob=training_parameters['mirror_prob'],
@@ -111,12 +123,35 @@ gen = swimming_data.batch_generator_dicts(train_dict=users_train,
 optimizer = tf.keras.optimizers.Adam(lr=training_parameters['lr'], beta_1=training_parameters['beta_1'],
                                      beta_2=training_parameters['beta_2'])
 
+# Path to the "best" model w.r.t. the validation accuracy
+best_path = os.path.join(save_path, 'model_best.h5')
+
+# Which model is the best model and where we save it
+cp = tf.keras.callbacks.ModelCheckpoint(best_path, verbose=1, monitor='val_weighted_acc',
+                                        save_best_only=True, mode='max')
+
 model = cnn_vanilla.cnn_model(input_shape, model_parameters)
 
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['acc'], weighted_metrics=['acc'])
 
-model.fit(x=gen,
-          steps_per_epoch=training_parameters['steps_per_epoch'],
-          epochs=training_parameters['max_epochs'])
+# Get the validation data
+x_val, y_val_cat, val_sample_weights = swimming_data.get_windows_dict(val_dict, return_weights=True)
+x_val = x_val.reshape((x_val.shape[0], x_val.shape[1], x_val.shape[2], 1))
 
-model.save(os.path.join(save_path, 'weights.h5'))
+# Train the model
+history = model.fit(x=gen, validation_data=(x_val, y_val_cat, val_sample_weights),
+                    epochs=training_parameters['max_epochs'],
+                    steps_per_epoch=training_parameters['steps_per_epoch'],
+                    callbacks=[cp])
+
+# Saving the history and parameters
+with open(os.path.join(save_path, 'train_val_dicts.pkl'), 'wb') as f:
+    pickle.dump([train_dict, val_dict], f)
+with open(os.path.join(save_path, 'history.pkl'), 'wb') as f:
+    pickle.dump([history.history], f)
+with open(os.path.join(save_path, 'data_parameters.pkl'), 'wb') as f:
+    pickle.dump([data_parameters], f)
+with open(os.path.join(save_path, 'model_parameters.pkl'), 'wb') as f:
+    pickle.dump([model_parameters], f)
+with open(os.path.join(save_path, 'training_parameters.pkl'), 'wb') as f:
+    pickle.dump([training_parameters], f)

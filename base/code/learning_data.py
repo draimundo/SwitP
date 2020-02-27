@@ -479,6 +479,20 @@ class LearningData(object):
             train_dict[l] = [u for u in users_train_in_class if u not in val_dict[l]]
         return train_dict, val_dict
 
+    def draw_train_dict(self, users_train, val_dict):
+        """
+        Infer the training set given the available users and the specific validation elements
+        :param users_train: List of users in the full training set
+        :param val_dict: Dictionary specifying which user was used for the validation
+        :return: train_dict: A dictionary of label-user combinations used in the training set
+        """
+        train_dict = {l: None for l in self.labels}
+        for l in self.labels:
+            users_in_class = list(self.data_windows['original'][l].keys())
+            users_train_in_class = [u for u in users_in_class if u in users_train]
+            train_dict[l] = [u for u in users_train_in_class if u not in val_dict[l]]
+        return train_dict
+
 
 def main():
     print("Running main")
