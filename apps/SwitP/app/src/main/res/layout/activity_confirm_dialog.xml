@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.BoxInsetLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_grey">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center_horizontal|top"
+            android:paddingBottom="15sp"
+            android:paddingTop="5sp"
+            android:text="@string/question_text"
+            android:textSize="18sp" />
+
+        <FrameLayout
+            android:layout_width="130dp"
+            android:layout_height="wrap_content">
+
+            <android.support.wearable.view.CircledImageView
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|bottom"
+                android:src="@drawable/ic_cc_clear"
+                app:circle_color="#AFAFAF"
+                app:circle_radius="25dp"
+                app:circle_radius_pressed="20dp" />
+
+            <android.support.wearable.view.CircledImageView
+                android:id="@+id/btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:src="@drawable/ic_cc_checkmark"
+                app:circle_color="@color/swimming_blue"
+                app:circle_radius="25dp"
+                app:circle_radius_pressed="20dp" />
+        </FrameLayout>
+    </LinearLayout>
+</androidx.wear.widget.BoxInsetLayout>

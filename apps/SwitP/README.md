@@ -1,0 +1,22 @@
+# SwitP/app
+## Goals
+This app is the main result of the project. It brings a real-time wearable user interface to the neural network, and allows some basic overview of parameters detected during pool swimming.
+
+## Connecting the watch to the PC/Mac
+With a working `adb` install, the watch can be connected in multiple ways (bluetooth, WiFi and USB). At least for the *Nixon the Mission*, the fastest and most reliable way is throug WiFi (USB disconnecting frequently). To connect/debug the watch through WiFi, follow these steps:
+1. Make sure that `Settings>Developer options>ADB debugging` and `Debug over WiFi` are eabled on the watch;
+2. Connect the Watch to the same network as the computer (hotspot with computer works well). Note the watches IP (can be seen in the WiFi options, or near the `Debug over WiFi` button);
+3. Use the command `adb connect <watch_ip>[:<port, default=5555>]` to connect to the watch.
+
+## Easy installation
+The repo ([smartwatches_swimming_daniel](https://gitlab.ethz.ch/disco-students/fs20/smartwatches_swimming_daniel/)) is configured with continuous deployment, to generate an APK with the latest version pushed. 
+
+The latest APK can be found in CI/CD->Pipelines, by clicking on the latest artifacts download button (on the right). (Or trying to use the API through [https://gitlab.ethz.ch/api/v4/projects/16182/jobs/artifacts/master/download?job=assembleDebug](https://gitlab.ethz.ch/api/v4/projects/16182/jobs/artifacts/master/download?job=assembleDebug))
+
+This APK can be installed on the watch using the `adb sideload` command on a computer connected to a Wear OS smartwatch through `adb`.
+
+## Building the app
+The repo is configured to be usable as is in Android Studio. Opening the root folder (for the app SwitP) invokes Gradle and all necessary dependencies.
+
+## Exporting files
+As for now, the files are stored in the watches internal storage. The easiest method to export them for later use, is to connect the watch to Android studio, and using the `Device File Explorer` under `View>Tool Windows` to navigate to `/sdcard/Android/data/com.wirdanie.switp.debug/files`, where the `.csv` files containing the data are stored, and right click to download them.

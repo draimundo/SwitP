@@ -6,12 +6,12 @@ import utils
 import learning_data
 import pickle
 import matplotlib.pyplot as plt
-
-from sklearn.metrics import log_loss
+import os
+#from sklearn.metrics import log_loss
 
 import platform
 if platform.system() == 'Darwin':
-    import os
+
     os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 # Load TFLite model and allocate tensors.
@@ -29,13 +29,13 @@ input_shape = input_details[0]['shape']
 data_path = r'../../data/processed_30hz_relabeled'
 
 # Path to training results
-results_path = r'../../tutorial_save_path'
+results_path = r'../../training_save_path_accgyrmag'
 
 # User whose model we want to load
 user = '7'
 
 # Get the data parameters used for loading
-with open(os.path.join(results_path, user, 'data_parameters.pkl'), 'rb') as f:
+with open(os.path.join(results_path, 'data_parameters.pkl'), 'rb') as f:
     data_parameters = pickle.load(f)[0]
 
 # Load the recordings
@@ -75,7 +75,7 @@ for (ii, rec) in enumerate(recs):
         y_true_windows[iii, :] = win_label_cat
         y_true_windows_maj[iii] = majority_label
 
-        windowint = np.array(window, dtype=np.float32).reshape((1, 180, 11, 1))
+        windowint = np.array(window_norm, dtype=np.float32).reshape((1, 180, len(data_parameters['data_columns']), 1))
 
         interpreter.set_tensor(input_details[0]['index'], windowint)
         interpreter.invoke()
@@ -96,7 +96,7 @@ for (ii, rec) in enumerate(recs):
 
     y_pred_windowsk = np.zeros((y_pred_windows.shape[0], y_pred_windows.shape[1]+1))
     y_pred_windowsk[:,:-1] = np.nan_to_num(y_pred_windows)
-    print("  Log-loss: %f" % log_loss(np.nan_to_num(y_true_windows_maj), y_pred_windowsk,labels=data_parameters['labels']))
+    #print("  Log-loss: %f" % log_loss(np.nan_to_num(y_true_windows_maj), y_pred_windowsk,labels=data_parameters['labels']))
 
 for (i, rec) in enumerate(recs):
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False)

@@ -1,0 +1,7 @@
+<resources>
+    <string name="hello_world">Hello Round World!</string>
+    <string name="btnRecord">Record</string>
+    <string name="btnSettings">Settings</string>
+    <string name="btnStop">STOP</string>
+    <string name="tvRecording">Recording...</string>
+</resources>

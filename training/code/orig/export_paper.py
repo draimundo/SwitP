@@ -9,9 +9,10 @@ import numpy as np
 
 # A path to re-sampled recordings which are organized into folders by user name.
 data_path = r'../../data/processed_30Hz_relabeled'
+data_path = os.path.abspath(data_path)
 
 # Path to where we want to save the training results
-save_path = r'../../training_save_path'
+save_path = r'../../training_save_path_accgyrmag'
 save_path = os.path.abspath(save_path)
 
 # A list of user names which are loaded.
@@ -26,7 +27,7 @@ data_parameters = {'users': users,  # Users whose data is loaded
                    'combine_labels': {0: [0, 5]},  # Labels we want to combine. Here I am combining NULL and
                    # TURN into NULL
                    'data_columns': ['ACC_0', 'ACC_1', 'ACC_2', 'GYRO_0', 'GYRO_1', 'GYRO_2', 'MAG_0',
-                                    'MAG_1', 'MAG_2', 'PRESS', 'LIGHT'],  # The sensor data we want to load
+                                    'MAG_1', 'MAG_2'],  #, 'PRESS', 'LIGHT'],  # The sensor data we want to load
                    'time_scale_factors': [0.9, 1.1],  # time-scaling factors we want to use. A copy is made of each
                    # recording with these factors.
                    'win_len': 180,  # The length of the segmentation window in number of samples

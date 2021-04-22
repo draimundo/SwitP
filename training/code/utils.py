@@ -5,6 +5,7 @@ import csv
 import scipy.interpolate
 import scipy.stats
 import constants
+import scipy.signal as sp
 
 
 def write_latex_confmat(cm, labels, is_integer=False):
@@ -15,7 +16,7 @@ def write_latex_confmat(cm, labels, is_integer=False):
     :param is_integer: A boolean set to True if the values are integers
     :return: The confusion matrix in latex form
     """
-    header = '\\begin{tabular}{' + 'c'*(len(labels)+1) + '}\n'
+    header = '\\begin{tabular}{' + 'c' * (len(labels) + 1) + '}\n'
     footer = '\\end{tabular}'
     text = header
     text = text + '&' + '&'.join(label for label in labels) + '\\\\\n'
@@ -80,7 +81,7 @@ def unclose(x, open_size=100):
     y = np.copy(x)
     for i in range(len(x)):
         ix_1 = i
-        ix_2 = np.min([len(x)+1, i+open_size+1])
+        ix_2 = np.min([len(x) + 1, i + open_size + 1])
         xwin = x[ix_1:ix_2]
         if x[ix_1] == 0:
             ix_uno = np.where(xwin == 1)[0]
@@ -101,7 +102,7 @@ def close(x, close_size=100):
     y = np.copy(x)
     for i in range(len(x)):
         ix_1 = i
-        ix_2 = np.min([len(x)+1, i+close_size+1])
+        ix_2 = np.min([len(x) + 1, i + close_size + 1])
         xwin = x[ix_1:ix_2]
         if x[ix_1] == 1:
             ix_null = np.where(xwin == 0)[0]
@@ -163,7 +164,7 @@ def normalize_range(x):
     """
     max_val = np.max(x)
     min_val = np.min(x)
-    return (x-min_val) / (max_val-min_val)
+    return (x - min_val) / (max_val - min_val)
 
 
 def detrend(x, window_length=600, return_trend=False):
@@ -222,6 +223,7 @@ def load_recording(file_path, category='raw'):
     if category == 'raw' or category == 'labeled':
         df = pd.read_csv(file_path, sep='; ', header=None, skiprows=[0], skipfooter=1)
         df.columns = constants.LABELED_COL_NAMES[0: len(df.columns)]
+        df.sort_values(by=['timestamp'])
         header = list(pd.read_csv(file_path, sep='; ', nrows=1).columns)
         with open(file_path, 'r') as f:
             footer = list(csv.reader(f))[-1]
@@ -230,6 +232,22 @@ def load_recording(file_path, category='raw'):
     if category == 'processed':
         df = pd.read_csv(file_path)
         return df
+
+
+def butterfilter(y, fs, fc, order=100):
+    """
+    Function applying a zero-phase butterworth 2*order filter on y
+    :param y: Input signal
+    :param fs: Sampling frequency of the input (in Hz)
+    :param fc: Cutoff frequency of the filter (in Hz)
+    :param order: Order of the butterworth filter (doubled with filtfilt)
+    :return: Filtered signal
+    """
+    corr_fac = ((np.sqrt(2.0)-1.0)**(1.0/(2.0*float(order))))
+    fc_corr = float(fc)/corr_fac
+    sos = sp.butter(order, 2*fc_corr / float(fs), output='sos')
+    y_new = sp.sosfiltfilt(sos, y)
+    return y_new
 
 
 def resample(x, y, x_new, kind='cubic'):
@@ -246,6 +264,23 @@ def resample(x, y, x_new, kind='cubic'):
     return y_new
 
 
+def filterresample(x, y, x_new, order=100, kind='cubic'):
+    """
+    Wrapper doing filtering and resampling
+    :param x: Original timestamps (in ns)
+    :param y: Original Values
+    :param x_new: New timestampps (in ns)
+    :param order: Order of the used filter (higher order -> more precise cutoff)
+    :param kind: Type of interpolation used
+    :return: Values in y evaluated at x_new
+    """
+    fs = 1/np.average(np.diff(x))*1E9
+    fc = 1/np.average(np.diff(x_new))/2*1E9
+    y_filt = butterfilter(y, fs, fc, order)
+    y_res = resample(x, y_filt, x_new, kind)
+    return y_res
+
+
 def time_scale_dataframe(df, factor, time_col, label_col):
     """
     Time-scale a dataframe
@@ -258,9 +293,9 @@ def time_scale_dataframe(df, factor, time_col, label_col):
     data_cols = [col for col in df.columns if col not in [time_col, label_col]]
     df_new = pd.DataFrame(columns=df.columns)
     dt = df[time_col].values[1] - df[time_col].values[0]
-    dts = dt/factor
+    dts = dt / factor
     t = df[time_col].values
-    ts = t[0] + np.arange(len(t))*dts
+    ts = t[0] + np.arange(len(t)) * dts
     t_target = np.arange(t[0], ts[-1], dt)
     df_new['timestamp'] = t_target
     for col in data_cols:
@@ -281,9 +316,9 @@ def get_sample_weights_new(y_cat):
         if np.sum(y_cat[:, i]) == 0:
             class_weights[i] = 0
         else:
-            class_weights[i] = 1/np.sum(y_cat[:, i])
-    y_sample_weights = np.sum(y_cat * class_weights, axis=1)/np.sum(y_cat, axis=1)
-    y_sample_weights = y_sample_weights/np.sum(y_sample_weights)*len(y_sample_weights)
+            class_weights[i] = 1 / np.sum(y_cat[:, i])
+    y_sample_weights = np.sum(y_cat * class_weights, axis=1) / np.sum(y_cat, axis=1)
+    y_sample_weights = y_sample_weights / np.sum(y_sample_weights) * len(y_sample_weights)
     return y_sample_weights
 
 

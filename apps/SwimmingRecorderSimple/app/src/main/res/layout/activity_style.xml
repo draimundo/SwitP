@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_blue"
+    android:padding="@dimen/box_inset_layout_padding"
+    tools:context=".StyleActivity"
+    tools:deviceIds="wear">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="112dp"
+        android:layout_marginEnd="112dp"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <Button
+            android:id="@+id/btnFreestyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/btnFreestyle"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textColor="@color/white"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="112dp"
+        android:layout_marginStart="112dp"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <Button
+            android:id="@+id/btnBreaststroke"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/btnBreaststroke"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="112dp"
+        android:layout_marginEnd="112dp"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <Button
+            android:id="@+id/btnBackstroke"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/btnBackstroke"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="112dp"
+        android:layout_marginStart="112dp"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <Button
+            android:id="@+id/btnButterfly"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/btnButterfly"
+            android:textAlignment="gravity"
+            android:textSize="24sp" />
+    </FrameLayout>
+
+</android.support.wear.widget.BoxInsetLayout>

@@ -1,2 +1,5 @@
 .DS_Store
 .idea/
+training/code/__pycache__/
+
+apps/SwitP/trash/

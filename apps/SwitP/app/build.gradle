@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.wirdanie.switp"
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        ndk { abiFilters 'armeabi-v7a' } // Reduces size of app
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+
+    }
+    aaptOptions {
+        noCompress "tflite"
+    }
+    compileOptions {
+        targetCompatibility = 1.8
+        sourceCompatibility = 1.8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'com.google.android.support:wearable:2.6.0'
+    implementation 'com.google.android.gms:play-services-wearable:17.0.0'
+    implementation 'com.android.support:percent:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:wear:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    compileOnly 'com.google.android.wearable:wearable:2.6.0'
+    implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
+}

@@ -21,26 +21,27 @@ if platform.system() == 'Darwin':
 data_path = r'../../data/processed_30hz_relabeled'
 
 # Path to training results
-results_path = r'../../tutorial_save_path'
+results_path = r'../../training_save_path_accgyrmag'
 
 # User whose model we want to load
 user = '7'
 
 # Get the data parameters used for loading
-with open(os.path.join(results_path, user, 'data_parameters.pkl'), 'rb') as f:
-    data_parameters = pickle.load(f)[0]
+#with open(os.path.join(results_path, user, 'data_parameters.pkl'), 'rb') as f:
+#    data_parameters = pickle.load(f)[0]
 
 # Fetch the model
-keras_model = keras.models.load_model(os.path.join(results_path, user, 'model_best.h5'))
+keras_model_path = os.path.join(results_path, 'model_best.h5')
+keras_model = keras.models.load_model(keras_model_path)
 
 # get input, output node names for the TF graph from the Keras model
 input_name = keras_model.inputs[0].name.split(':')[0]
 keras_output_node_name = keras_model.outputs[0].name.split(':')[0]
 graph_output_node_name = keras_output_node_name.split('/')[-1]
 
-converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
+converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_model_path)
 tflite_model = converter.convert()
-open(os.path.join(results_path, user, 'converted_model.tflite'), "wb").write(tflite_model)
+open(os.path.join(results_path, 'converted_model.tflite'), "wb").write(tflite_model)
 
 # For coreml models (iOS)
 #import tfcoreml

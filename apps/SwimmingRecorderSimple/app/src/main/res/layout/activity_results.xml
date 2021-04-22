@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_grey"
+    android:padding="@dimen/box_inset_layout_padding"
+    tools:context=".ResultsActivity"
+    tools:deviceIds="wear">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="112dp"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <Button
+            android:id="@+id/btnSuccess"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/btnSuccess"
+            android:textAlignment="center"
+            android:textSize="24sp"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="112dp"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <Button
+            android:id="@+id/btnFailure"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/btnFailure"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:boxedEdges="none">
+
+        <TextView
+            android:id="@+id/tvResults"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/tvResults"
+            android:textSize="48sp"
+            android:textColor="@color/white"
+            android:visibility="invisible" />
+    </FrameLayout>
+</android.support.wear.widget.BoxInsetLayout>

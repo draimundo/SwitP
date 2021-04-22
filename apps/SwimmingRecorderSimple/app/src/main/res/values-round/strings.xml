@@ -1,0 +1,26 @@
+<resources>
+    <string name="hello_world">Hello Round World!</string>
+    <string name="btnRecord">Record</string>
+    <string name="btnSettings">Settings</string>
+    <string name="btnFreestyle">Kr.</string>
+    <string name="btnBreaststroke">Br.</string>
+    <string name="btnBackstroke">Rü.</string>
+    <string name="btnButterfly">De.</string>
+    <string name="btnSuccess">Success</string>
+    <string name="btnFailure">Failure</string>
+
+    <string name="fileFreestyle">Freestyle</string>
+    <string name="fileBreaststroke">Breaststroke</string>
+    <string name="fileBackstroke">Backstroke</string>
+    <string name="fileButterfly">Butterfly</string>
+
+    <string name="tvFreestyle">Kraul</string>
+    <string name="tvBreaststroke">Brust</string>
+    <string name="tvBackstroke">Rücken</string>
+    <string name="tvButterfly">Delphin</string>
+    <string name="tvStartBottom">Swipe &#x2195; twice\n to start</string>
+    <string name="tvStop">Recording&#8230;\n\n Swipe twice to stop</string>
+    <string name="tvResults">Wait&#8230;</string>
+    <string name="tvStopTop">Recording</string>
+    <string name="tvStopBottom">Swipe &#x2195; twice\n to stop</string>
+</resources>
